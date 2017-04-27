@@ -1,4 +1,4 @@
-package com.markovChatbotTrainer;
+package com.markovChatbotTrainer.tokens;
 
 import java.util.List;
 

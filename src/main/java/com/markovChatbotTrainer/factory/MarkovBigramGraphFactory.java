@@ -1,13 +1,13 @@
-package com.markovChatbotTrainer;
+package com.markovChatbotTrainer.factory;
 
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Created by Oliver on 4/25/2017.
+ * Created by Oliver on 4/27/2017.
  */
-public interface MarkovGraphFactory {
+public interface MarkovBigramGraphFactory {
 
     Map<String, TreeMap<Integer, List<String>>> create();
 
