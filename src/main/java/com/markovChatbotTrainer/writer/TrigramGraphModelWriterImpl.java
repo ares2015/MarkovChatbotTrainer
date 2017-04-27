@@ -13,11 +13,12 @@ import java.util.TreeMap;
  */
 public class TrigramGraphModelWriterImpl implements TrigramGraphModelWriter, Runnable {
 
-    private String path = "c:\\Users\\Oliver\\Documents\\NlpTrainingData\\MarkovChatbot\\MarkovTrigramChatbotModel.txt";
+    private String path;
 
     private Map<String, Map<String, TreeMap<Integer, List<String>>>> trigramGraph;
 
-    public TrigramGraphModelWriterImpl(Map<String, Map<String, TreeMap<Integer, List<String>>>> trigramGraph) {
+    public TrigramGraphModelWriterImpl(String path, Map<String, Map<String, TreeMap<Integer, List<String>>>> trigramGraph) {
+        this.path = path;
         this.trigramGraph = trigramGraph;
     }
 

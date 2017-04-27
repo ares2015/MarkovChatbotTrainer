@@ -13,11 +13,12 @@ import java.util.TreeMap;
  */
 public class BigramGraphModelWriterImpl implements BigramGraphModelWriter, Runnable {
 
-    private String path = "c:\\Users\\Oliver\\Documents\\NlpTrainingData\\MarkovChatbot\\MarkovBigramChatbotModel.txt";
+    private String path;
 
     private Map<String, TreeMap<Integer, List<String>>> bigramGraph;
 
-    public BigramGraphModelWriterImpl(Map<String, TreeMap<Integer, List<String>>> bigramGraph) {
+    public BigramGraphModelWriterImpl(String path, Map<String, TreeMap<Integer, List<String>>> bigramGraph) {
+        this.path = path;
         this.bigramGraph = bigramGraph;
     }
 

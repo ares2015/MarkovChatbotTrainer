@@ -1,9 +1,11 @@
 package com.markovChatbotTrainer;
 
-import com.markovChatbotTrainer.factory.MarkovBigramGraphFactory;
-import com.markovChatbotTrainer.factory.MarkovBigramGraphFactoryImpl;
-import com.markovChatbotTrainer.factory.MarkovTrigramGraphFactory;
-import com.markovChatbotTrainer.factory.MarkovTrigramGraphFactoryImpl;
+import com.markovChatbotTrainer.factory.bigram.MarkovBackwardBigramGraphFactoryImpl;
+import com.markovChatbotTrainer.factory.bigram.MarkovBigramGraphFactory;
+import com.markovChatbotTrainer.factory.bigram.MarkovForwardBigramGraphFactoryImpl;
+import com.markovChatbotTrainer.factory.trigram.MarkovBackwardTrigramGraphFactoryImpl;
+import com.markovChatbotTrainer.factory.trigram.MarkovForwardTrigramGraphFactoryImpl;
+import com.markovChatbotTrainer.factory.trigram.MarkovTrigramGraphFactory;
 import com.markovChatbotTrainer.tokens.Tokenizer;
 import com.markovChatbotTrainer.tokens.TokenizerImpl;
 import com.markovChatbotTrainer.writer.BigramGraphModelWriterImpl;
@@ -23,28 +25,47 @@ import java.util.concurrent.Future;
 public class MarkovChatbotTrainer {
 
     public static void main(String[] args) throws IOException {
+        String forwardBigramPath = "c:\\Users\\Oliver\\Documents\\NlpTrainingData\\MarkovChatbot\\MarkovForwardBigramChatbotModel.txt";
+        String backwardBigramPath = "c:\\Users\\Oliver\\Documents\\NlpTrainingData\\MarkovChatbot\\MarkovBackwardBigramChatbotModel.txt";
+        String forwardTrigramPath = "c:\\Users\\Oliver\\Documents\\NlpTrainingData\\MarkovChatbot\\MarkovForwardTrigramChatbotModel.txt";
+        String backwardTrigramPath = "c:\\Users\\Oliver\\Documents\\NlpTrainingData\\MarkovChatbot\\MarkovBackwardTrigramChatbotModel.txt";
+
         long startTime = System.currentTimeMillis();
 
         Tokenizer tokenizer = new TokenizerImpl();
 
-        MarkovBigramGraphFactory markovBigramGraphFactory = new MarkovBigramGraphFactoryImpl(tokenizer);
-        MarkovTrigramGraphFactory markovTrigramGraphFactory = new MarkovTrigramGraphFactoryImpl(tokenizer);
+        MarkovBigramGraphFactory markovForwardBigramGraphFactory = new MarkovForwardBigramGraphFactoryImpl(tokenizer);
+        MarkovBigramGraphFactory markovBackwardBigramGraphFactory = new MarkovBackwardBigramGraphFactoryImpl(tokenizer);
 
-        Map<String, TreeMap<Integer, List<String>>> bigramGraph = markovBigramGraphFactory.create();
-        Map<String, Map<String, TreeMap<Integer, List<String>>>> trigramGraph = markovTrigramGraphFactory.create();
+        MarkovTrigramGraphFactory markovForwardTrigramGraphFactory = new MarkovForwardTrigramGraphFactoryImpl(tokenizer);
+        MarkovTrigramGraphFactory markovBackwardTrigramGraphFactory = new MarkovBackwardTrigramGraphFactoryImpl(tokenizer);
 
-        ExecutorService executor = Executors.newFixedThreadPool(2);
+        Map<String, TreeMap<Integer, List<String>>> forwardBigramGraph = markovForwardBigramGraphFactory.create();
+        Map<String, TreeMap<Integer, List<String>>> backwardBigramGraph = markovBackwardBigramGraphFactory.create();
 
-        Runnable bigramGraphModelWriter = new BigramGraphModelWriterImpl(bigramGraph);
-        Runnable trigramGraphModelWriter = new TrigramGraphModelWriterImpl(trigramGraph);
+        Map<String, Map<String, TreeMap<Integer, List<String>>>> forwardTrigramGraph = markovForwardTrigramGraphFactory.create();
+        Map<String, Map<String, TreeMap<Integer, List<String>>>> backwardTrigramGraph = markovBackwardTrigramGraphFactory.create();
 
-        Future<?> bigramFuture = executor.submit(bigramGraphModelWriter);
-        Future<?> trigramFuture = executor.submit(trigramGraphModelWriter);
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+
+        Runnable forwardBigramGraphModelWriter = new BigramGraphModelWriterImpl(forwardBigramPath, forwardBigramGraph);
+        Runnable backwardBigramGraphModelWriter = new BigramGraphModelWriterImpl(backwardBigramPath, backwardBigramGraph);
+
+        Runnable forwadTrigramGraphModelWriter = new TrigramGraphModelWriterImpl(forwardTrigramPath, forwardTrigramGraph);
+        Runnable backwardTrigramGraphModelWriter = new TrigramGraphModelWriterImpl(backwardTrigramPath, backwardTrigramGraph);
+
+        Future<?> forwardBigramFuture = executor.submit(forwardBigramGraphModelWriter);
+        Future<?> backwardBigramFuture = executor.submit(backwardBigramGraphModelWriter);
+
+        Future<?> forwardTrigramFuture = executor.submit(forwadTrigramGraphModelWriter);
+        Future<?> backwardTrigramFuture = executor.submit(backwardTrigramGraphModelWriter);
+
 
         boolean areModelsWritten = false;
-        while (!bigramFuture.isDone() && !trigramFuture.isDone()) {
-
+        while (!forwardBigramFuture.isDone() && !backwardBigramFuture.isDone() && !forwardTrigramFuture.isDone() &&
+                !backwardTrigramFuture.isDone()) {
         }
+
         executor.shutdown();
         long stopTime = System.currentTimeMillis();
         long elapsedTime = stopTime - startTime;

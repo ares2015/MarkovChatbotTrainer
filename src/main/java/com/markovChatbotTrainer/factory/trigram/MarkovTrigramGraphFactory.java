@@ -1,4 +1,4 @@
-package com.markovChatbotTrainer.factory;
+package com.markovChatbotTrainer.factory.trigram;
 
 import java.util.List;
 import java.util.Map;
